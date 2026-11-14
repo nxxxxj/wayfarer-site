@@ -81,7 +81,7 @@
 
   <h1>Pricing</h1>
   <p class="lede">Wayfarer is free. Your whole camera roll on the map, every photo matted, journeys stitched and played back, nothing leaving your phone. The plans are for what leaves it.</p>
-  <p class="lede">Every plan is yearly, and the biggest works out to less than a fancy coffee a month. The smallest is one coffee a year.</p>
+  <p class="lede">Every plan is yearly, and the biggest works out to <span id="pm">—</span> a month. The smallest is one coffee a year.</p>
   <p class="note" id="curNote">The App Store charges in the currency of the country your Apple ID belongs to.</p>
 
   <div class="scroll">
@@ -150,9 +150,15 @@ var WF={"tz":{"Asia/Dubai":"AE","Asia/Kabul":"AF","America/Antigua":"AG","Americ
     try{return new Intl.NumberFormat('en',{style:'currency',currency:cur,currencyDisplay:'narrowSymbol',minimumFractionDigits:(v%1)?2:0,maximumFractionDigits:2}).format(v);}
     catch(e){return cur+' '+v;}
   }
+  function monthly(cur,v){
+    var m=v/12;
+    try{return new Intl.NumberFormat('en',{style:'currency',currency:cur,currencyDisplay:'narrowSymbol',minimumFractionDigits:0,maximumFractionDigits:(m<20)?2:0}).format(m);}
+    catch(e){return cur+' '+Math.round(m*100)/100;}
+  }
   function set(c,known){
     if(SILENT[c]){c='US';known=false;}
     var r=WF.p[c]; if(!r){return;}
+    document.getElementById('pm').textContent=monthly(r[0],r[3]);
     document.getElementById('p0').textContent=money(r[0],0);
     document.getElementById('p1').textContent=money(r[0],r[1]);
     document.getElementById('p4').textContent=money(r[0],r[2]);
