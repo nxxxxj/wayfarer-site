@@ -119,10 +119,10 @@
 
   /* ---------- plain + foot ---------- */
   .tail{max-width:1040px;margin:0 auto;padding:0 24px 96px}
-  .pt.last{align-items:stretch}
-  .pt.last .txt{display:flex;flex-direction:column;justify-content:center;position:relative}
-  .pt.last .fig{align-items:center}
-  .pt p.store{position:absolute;left:0;bottom:0;margin:0;padding-left:30px}  /* flush with the body copy */
+  .pt.last{grid-template-rows:1fr auto;row-gap:0}
+  .pt.last .txt{grid-column:1;grid-row:1;align-self:center}
+  .pt.last .fig{grid-column:2;grid-row:1/3}
+  .pt p.store{grid-column:1;grid-row:2;align-self:end;justify-self:end;width:100%;max-width:480px;margin:0;padding-left:30px}  /* flush with the body copy */
   .store img{height:54px;width:auto;display:block}  /* becomes a link when the store page exists */
   .plain{padding:0;margin:72px 0 0;display:flex;gap:24px;align-items:flex-start}
   .plain img{width:52px;height:52px;flex:0 0 auto;margin-top:2px}
@@ -155,8 +155,10 @@
     .fig img{width:min(260px,100%)}
     .strip{padding-left:24px;scroll-padding-left:24px}
     .strip img{width:176px}
-    .pt.last{align-items:start}
-    .pt p.store{position:static;margin:28px 0 0}
+    .pt.last{grid-template-rows:auto auto auto;row-gap:32px}
+    .pt.last .txt{grid-column:1;grid-row:1}
+    .pt.last .fig{grid-column:1;grid-row:2}
+    .pt p.store{grid-column:1;grid-row:3;justify-self:center;max-width:none;width:auto;padding:0;margin:4px 0 0}
   }
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.play span{transition:none}}
 </style>
@@ -265,9 +267,9 @@
       <div class="txt">
         <h2>What surrounded the moment</h2>
         <p>Date, time, weather, temperature and elevation, read from the photo and the weather of that day.</p>
-        <p class="store"><img src="media/appstore-badge.png" alt="Download on the App Store" height="54"></p>
       </div>
       <div class="fig"><img src="media/lisbon.webp" width="660" height="1435" loading="lazy" decoding="async" alt="A matted photo of a tram in Lisbon, 2023, with its date, time, temperature, conditions, elevation and compass heading beneath"></div>
+      <p class="store"><img src="media/appstore-badge.png" alt="Download on the App Store" height="54"></p>
     </div>
 
   </div>
@@ -319,7 +321,7 @@
 (function(){
   var svg=document.querySelector('.route'),dash=document.getElementById('routePath'),full=document.getElementById('routeFull');
   if(!svg||!('getTotalLength' in full))return;
-  var R=20,pts=[],total=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches,lastN=-1;
+  var R=20,pts=[],total=0,lastN=-1;
   function abs(el){var r=el.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height};}
   function stops(){
     document.documentElement.classList.add('measuring');   /* measure headings where they will land, not mid-fade */
@@ -349,17 +351,16 @@
     svg.setAttribute('width',W);svg.setAttribute('height',H);svg.style.height=H+'px';
     full.setAttribute('d',d);
     total=full.getTotalLength();pts=[];
-    for(var L=0;L<=total;L+=3){var q=full.getPointAtLength(L);pts.push([q.x.toFixed(1),q.y.toFixed(1)]);}
-    var e=full.getPointAtLength(total);pts.push([e.x.toFixed(1),e.y.toFixed(1)]);
+    for(var L=0;L<=total;L+=3){var q=full.getPointAtLength(L);pts.push([Math.round(q.x*10)/10,Math.round(q.y*10)/10]);}
+    var e=full.getPointAtLength(total);pts.push([Math.round(e.x*10)/10,Math.round(e.y*10)/10]);
     lastN=-1;draw();
   }
   function draw(){
     if(!pts.length)return;
-    var n=pts.length;
-    if(!still){
-      var line=scrollY+innerHeight*0.72;n=0;              /* the pen sits 72% down the screen */
-      while(n<pts.length&&pts[n][1]<=line)n++;
-    }
+    var top=window.pageYOffset||document.documentElement.scrollTop||0,
+        vh=window.innerHeight||document.documentElement.clientHeight,
+        line=top+vh*0.72,n=0;                              /* the pen sits 72% down the screen */
+    while(n<pts.length&&pts[n][1]<=line)n++;
     if(n===lastN)return;lastN=n;
     if(n<2){dash.setAttribute('d','');return;}
     var out=['M'+pts[0][0]+' '+pts[0][1]];
@@ -368,7 +369,7 @@
   }
   var tick=false;
   addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(function(){draw();tick=false;});}},{passive:true});
-  addEventListener('resize',build);addEventListener('load',build);
+  addEventListener('resize',build);addEventListener('load',build);addEventListener('orientationchange',build);addEventListener('pageshow',build);
   if(document.fonts&&document.fonts.ready)document.fonts.ready.then(build);
   document.querySelectorAll('img').forEach(function(im){if(!im.complete)im.addEventListener('load',build,{once:true});});
   build();
