@@ -8,76 +8,339 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff" href="media/astrella.woff" crossorigin>
 <style>
+  @font-face{font-family:'Astrella';src:url(media/astrella.woff) format('woff'),url(media/astrella.ttf) format('truetype');font-weight:400;font-style:normal;font-display:swap}
   :root{
-    --paper:#EDE7DD; --ink:#191919; --faint:#8A8172; --line:#CFC7B6; --red:#D6392F;
+    --paper:#FFFFFF; --ink:#191919; --faint:#8A8172; --line:#E2DED6; --red:#D6392F;
+    --phone:320px;
   }
   *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
   body{background:var(--paper);color:var(--ink);font-family:'Outfit',sans-serif;font-weight:300;
-       font-size:17px;line-height:1.65;
-       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cg fill='none' stroke='%23c9c1b2' stroke-opacity='0.35' stroke-width='1.2'%3E%3Cpath d='M60 90c70-50 160-40 210 10s140 60 210 10 90 30 60 90-140 40-190 90-160 60-220 10S-10 140 60 90z'/%3E%3Cpath d='M100 130c55-38 125-30 165 8s110 46 165 8 70 24 47 70-110 32-149 70-125 47-172 8-77-126-56-164z'/%3E%3Cpath d='M480 420c50-30 100 10 80 60s-90 50-130 20-10-50 50-80z'/%3E%3Cpath d='M120 460c40-24 84 8 68 48s-72 40-104 16-12-40 36-64z'/%3E%3C/g%3E%3C/svg%3E");
-       background-size:600px}
-  .wrap{max-width:640px;margin:0 auto;padding:18vh 24px 96px}
-  .mark{font-family:'Abril Fatface',serif;font-size:64px;line-height:1;letter-spacing:.5px}
-  .tag{font-size:19px;color:var(--faint);margin-top:6px}
-  .lede{font-family:'Abril Fatface',serif;font-size:30px;line-height:1.2;margin:40px 0 16px;max-width:520px}
-  p{margin:0 0 16px}
-  .intro{max-width:480px}
-  .cta{margin:28px 0 0;font-weight:400}
-  .cta a{color:var(--ink);border-bottom-color:var(--ink)}
+       font-size:17px;line-height:1.65;overflow-x:hidden}
+  img,video{display:block;max-width:100%}
   a{color:var(--red);text-decoration:none;border-bottom:1px solid var(--line)}
   a:hover{border-bottom-color:var(--red)}
-  .points{margin-top:72px;border-top:1px solid var(--line)}
-  .pt{padding:26px 0;border-bottom:1px solid var(--line)}
-  .pt h2{font-family:'Outfit',sans-serif;font-weight:600;font-size:18px;margin:0 0 6px}
-  .pt p{margin:0;max-width:520px}
-  .plain{background:rgba(255,255,255,.55);border:1px solid var(--line);padding:18px 20px;margin:40px 0 0}
-  .plain p{margin:0}
+  p{margin:0 0 16px}
+
+  /* ---------- hero: the ad, in register ---------- */
+  .hero{position:relative;margin-top:0;display:flex;flex-direction:column}
+  .window{position:relative;overflow:hidden}
+  .window::before,.window::after{content:"";position:absolute;left:0;right:0;height:90px;z-index:1;pointer-events:none}
+  .window::before{top:0;background:linear-gradient(#fff,rgba(255,255,255,0))}
+  .window::after{bottom:0;background:linear-gradient(rgba(255,255,255,0),#fff)}
+  .stage{position:relative;width:100%;aspect-ratio:2288/1402}
+  .stage .map{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5}
+  .stage .ph{position:absolute;left:40.95%;top:10.98%;width:22.03%;height:auto;z-index:3;filter:drop-shadow(0 30px 40px rgba(0,0,0,.28))}
+  /* the phone spans 11%–85.5% of the stage; both sides centre on it */
+  .pitch{position:absolute;left:0;right:0;top:10.98%;height:74.5%;pointer-events:none;z-index:4;display:flex}
+  .pitch .side{display:flex;align-items:center}
+  .pitch .left{width:40.95%;justify-content:flex-end;padding-right:4.5%}
+  .pitch .right{width:37%;margin-left:auto;justify-content:flex-start;padding:0 24px 0 4.5%}
+  .pitch .brand,.pitch .txt{pointer-events:auto}
+  .brand{display:flex;align-items:center;gap:18px}
+  .brand .mark{transform:translateY(-2px)}
+  .seal{width:64px;height:64px;flex:0 0 auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
+  .mark{font-family:'Astrella','Abril Fatface',serif;font-size:64px;line-height:1;letter-spacing:0;white-space:nowrap}
+  .txt{max-width:380px}
+  .lede{font-family:'Astrella','Abril Fatface',serif;font-size:38px;line-height:1.12;margin:0 0 16px}
+  .intro{max-width:380px}
+  .cta{margin:28px 0 0;font-weight:400}
+  .cta::before{content:"";display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--red);margin:0 12px -3px 0}
+
+  /* ---------- the film's phone ---------- */
+  .phone{position:relative;width:var(--phone);max-width:100%;aspect-ratio:810/1762;border-radius:38px;background:#111;
+       padding:9px;box-shadow:0 30px 60px -20px rgba(0,0,0,.45),0 0 0 1px rgba(0,0,0,.35)}
+  .phone .screen{position:relative;width:100%;height:100%;border-radius:30px;overflow:hidden;background:#000}
+  .phone video{width:100%;height:100%;object-fit:cover}
+  .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:transparent;border:0;cursor:pointer}
+  .play span{width:68px;height:68px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;
+       box-shadow:0 0 0 10px rgba(214,57,47,.22),0 8px 24px rgba(0,0,0,.35);transition:transform .2s}
+  .play:hover span{transform:scale(1.06)}
+  .play svg{margin-left:4px}
+  .play.off{display:none}
+
+  @media (max-width:1180px){.mark{font-size:52px}.seal{width:54px;height:54px}.lede{font-size:32px}.pitch .right{width:40%}}
+
+  /* ---------- points ---------- */
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+  .points{border-top:1px solid var(--line)}
+  .pt{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center;
+       padding:64px 0;border-bottom:1px solid var(--line)}
+  .pt:nth-child(even) .txt{order:2}
+  .pt .txt{max-width:480px}
+  .pt .txt .lede,.pt .txt .intro{max-width:none}
+  .pt:nth-child(odd) .txt{justify-self:end}
+  .pt h2{font-family:'Outfit',sans-serif;font-weight:600;font-size:20px;margin:0 0 8px;display:flex;align-items:center;gap:12px}
+  .pt p{padding-left:30px}  /* text aligns with the heading; the dot hangs in its own channel */
+  .pt h2::before{content:"";flex:0 0 auto;width:18px;height:18px;border-radius:50%;background:var(--red)}
+  .pt p{margin:0}
+  .fig{display:flex;justify-content:center}
+  .fig img{width:min(300px,100%);height:auto;border-radius:22px;box-shadow:0 24px 48px -18px rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.08)}
+  .fig.wide img{width:min(440px,100%);border-radius:14px}
+
+  /* skins strip */
+  .pt.skins{display:block;padding-bottom:0}
+  .pt.skins .txt{max-width:480px;justify-self:start}
+  .strip{display:flex;gap:18px;margin:36px 0 0;padding:0 24px 64px;overflow-x:auto;scroll-snap-type:x mandatory;
+       -webkit-overflow-scrolling:touch;scrollbar-width:none;
+       margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding-left:max(24px,calc(50vw - 520px));scroll-padding-left:max(24px,calc(50vw - 520px))}
+  .strip::-webkit-scrollbar{display:none}
+  .strip img{flex:0 0 auto;width:212px;height:auto;border-radius:16px;scroll-snap-align:start;
+       box-shadow:0 18px 36px -16px rgba(0,0,0,.4),0 0 0 1px rgba(0,0,0,.08)}
+
+  /* ---------- the route: a dashed line stop to stop, drawn as you scroll ---------- */
+  body{position:relative}
+  .wrap,.tail{position:relative;z-index:3}
+  .hero{z-index:auto}                 /* no stacking context: the route can sit between the map and the phone */
+  .route{position:absolute;left:0;top:0;width:100%;pointer-events:none;z-index:2;overflow:visible}
+  .route .dash{fill:none;stroke:var(--red);stroke-width:3;stroke-dasharray:11 9;stroke-linecap:round;stroke-linejoin:round}
+  .route .reveal{fill:none;stroke:#fff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------- text arrives as you reach it ---------- */
+  .pt .txt,.plain{opacity:0;transform:translateY(14px);transition:opacity .9s ease-out,transform .9s cubic-bezier(.2,.6,.2,1)}
+  .pt .txt.in,.plain.in,.no-io .pt .txt,.no-io .plain{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.pt .txt,.plain{opacity:1;transform:none;transition:none}}
+
+  /* ---------- plain + foot ---------- */
+  .tail{max-width:1040px;margin:0 auto;padding:0 24px 96px}
+  .plain{padding:0;margin:72px 0 0;display:flex;gap:24px;align-items:flex-start}
+  .plain img{width:52px;height:52px;flex:0 0 auto;margin-top:2px}
+  .plain p{margin:0;max-width:760px}
   .foot{margin-top:72px;padding-top:20px;border-top:1px solid var(--line);font-size:14px;color:var(--faint)}
   .foot a{color:var(--faint)}
+  .foot small{display:block;margin-top:8px;font-size:12px}
+
+  /* ---------- small screens ---------- */
+  @media (max-width:880px){
+    /* order on a phone: seal and wordmark, the picture, then headline and copy */
+    .pitch{display:contents}
+    .pitch .side{width:auto;display:block;padding:0 24px}
+    .pitch .left{order:-1;padding-top:24px;padding-bottom:8px}
+    .pitch .right{order:1;padding-top:28px}
+    .mark{font-size:36px}.seal{width:54px;height:54px}
+    .txt,.intro{max-width:none}
+    .lede{font-size:32px}
+    .right .lede,.right .intro{padding-left:30px}   /* the CTA dot hangs in the margin; headline and copy align with its text */
+    .plain{flex-direction:column;gap:16px}
+    /* the stage zooms in so the phone is 72% of the screen, map still in register around it */
+    .window{height:calc(72vw * 1020/492 + 72px)}
+    .window::before,.window::after{height:48px}
+    .stage{position:absolute;width:327vw;left:50%;top:calc(36px - 22vw);transform:translateX(-51.97%)}
+    .phone{width:min(360px,100%);padding:0;border-radius:18px;background:transparent;box-shadow:0 24px 48px -18px rgba(0,0,0,.4)}
+    .phone .screen{border-radius:18px}
+    .pt{grid-template-columns:1fr;gap:32px;padding:48px 0}
+    .pt:nth-child(even) .txt{order:0}
+    .pt:nth-child(odd) .txt{justify-self:start}
+    .fig img{width:min(260px,100%)}
+    .strip{padding-left:24px;scroll-padding-left:24px}
+    .strip img{width:176px}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.play span{transition:none}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="mark">Wayfarer</div>
-  <div class="tag">for the explorer.</div>
 
-  <div class="lede">Your camera roll, mapped.</div>
-  <p class="intro">Every photo you've taken, pinned where you took it. Matted and captioned like a print. Stitched into journeys you can play back, share and send.</p>
-  <p class="cta">Coming to the App&nbsp;Store.</p>
-
-  <div class="points">
-    <div class="pt">
-      <h2>Tap a dot, rediscover a place</h2>
-      <p>Every dot on the map is somewhere you've been. Tap it for your photos from there, by year. Zoom in and the dots split into the places within.</p>
+<header class="hero">
+  <div class="window">
+  <div class="stage">
+    <img class="map" src="media/tokyo-map-1600.webp"
+         srcset="media/tokyo-map-1100.webp 1100w, media/tokyo-map-1600.webp 1600w, media/tokyo-map-2288.webp 2288w"
+         sizes="(max-width:880px) 327vw, 100vw" width="2288" height="1402" alt="" fetchpriority="high">
+    <img class="ph" src="media/tokyo-phone.webp" width="492" height="1020"
+         alt="A phone showing a matted black-and-white photo of a wedding in Tokyo, 2017, pinned to Meiji Jingu on the map that continues behind the phone">
+  </div>
+  </div>
+  <div class="pitch">
+    <div class="side left">
+      <div class="brand">
+        <img class="seal" src="media/seal.png" alt="" width="64" height="64">
+        <div class="mark">Wayfarer</div>
+      </div>
     </div>
-    <div class="pt">
-      <h2>Every photo, matted</h2>
-      <p>Place, country, year, in handwriting. Add a line of your own underneath, and a tip for the place: the thing worth knowing before you go.</p>
-    </div>
-    <div class="pt">
-      <h2>Stitch a journey</h2>
-      <p>Pick the photos from a trip and Wayfarer draws the route, stop to stop, with how you travelled between them. Play it back as a film: the map flies and the prints land.</p>
-    </div>
-    <div class="pt">
-      <h2>Share it your way</h2>
-      <p>The photo, the frame with its map, a post or a story cut for Instagram, a journey as a film, or the journey itself to a friend with Wayfarer.</p>
-    </div>
-    <div class="pt">
-      <h2>Map skins</h2>
-      <p>Each skin changes the map, the matte, the type and everything you share. Free to wear in the app.</p>
-    </div>
-    <div class="pt">
-      <h2>What surrounded the moment</h2>
-      <p>Date, time, weather, temperature and elevation, read from the photo and the weather of that day.</p>
+    <div class="side right">
+      <div class="txt">
+        <div class="lede">Your camera roll, mapped.</div>
+        <p class="intro">Every photo you've taken, pinned where you took it. Matted and captioned like a print. Stitched into journeys you can play back, share and send.</p>
+      </div>
     </div>
   </div>
+</header>
 
+<main class="wrap">
+  <div class="points">
+
+    <div class="pt">
+      <div class="txt">
+        <h2>Stitch a journey</h2>
+        <p>Pick the photos from a trip and Wayfarer draws the route, stop to stop, with how you travelled between them. Play it back as a film: the map flies and the prints land.</p>
+      </div>
+      <div class="fig">
+        <div class="phone">
+          <div class="screen">
+            <video id="film" poster="media/poster.webp" playsinline muted preload="none"
+                   aria-label="A Wayfarer journey: Tea, Cardamom and Hills of South India">
+              <source src="media/film.mp4" type="video/mp4">
+            </video>
+            <button class="play" id="play" aria-label="Play the journey">
+              <span><svg width="24" height="26" viewBox="0 0 24 26" aria-hidden="true"><path d="M2 1.5v23l20-11.5z" fill="#fff"/></svg></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt">
+      <div class="txt">
+        <h2>Tap a dot, rediscover a place</h2>
+        <p>Every dot on the map is somewhere you've been. Tap it for your photos from there, by year. Zoom in and the dots split into the places within.</p>
+      </div>
+      <div class="fig wide"><img src="media/home.webp" width="660" height="435" loading="lazy" decoding="async" alt="Wayfarer&#39;s home map: a dot for every place photographed, the photos from one place above it, and a rail of the year and its months"></div>
+    </div>
+
+    <div class="pt">
+      <div class="txt">
+        <h2>Every photo, matted</h2>
+        <p>Place, country, year, in handwriting. Add a line of your own underneath, and a tip for the place: the thing worth knowing before you go.</p>
+      </div>
+      <div class="fig"><img src="media/spiti.webp" width="660" height="1435" loading="lazy" decoding="async" alt="A matted photo of a river valley in Spiti on a terrain map, stamped Chhatru, India, 2018, with a handwritten line beneath"></div>
+    </div>
+
+    <div class="pt">
+      <div class="txt">
+        <h2>Tips, pinned to the spot</h2>
+        <p>Write what you wish you'd known before you went: the hour, the entrance, the stall worth the queue. The tip stays on the spot where you stood, not the city, and travels with the photo into every journey you stitch.</p>
+      </div>
+      <div class="fig"><img src="media/rome.webp" width="660" height="1435" loading="lazy" decoding="async" alt="A matted photo of the Arch of Constantine in Rome, 2011, with three tips written beneath it"></div>
+    </div>
+
+    <div class="pt">
+      <div class="txt">
+        <h2>Share it your way</h2>
+        <p>The photo, the frame with its map, a post or a story cut for Instagram, a journey as a film, or the journey itself to a friend with Wayfarer.</p>
+      </div>
+      <div class="fig"><img src="media/revelstoke.webp" width="660" height="1435" loading="lazy" decoding="async" alt="A matted photo of mountains at Revelstoke, Canada, with the share choices beneath: photo, frame, post, story"></div>
+    </div>
+
+    <div class="pt skins">
+      <div class="txt">
+        <h2>Map skins</h2>
+        <p>Each skin changes the map, the matte, the type and everything you share. Free to wear in the app.</p>
+      </div>
+      <div class="strip" aria-label="The same photo of Himeji Castle in eight map skins">
+        <img src="media/himeji1.webp" width="480" height="1044" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin one">
+        <img src="media/himeji2.webp" width="480" height="1044" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin two">
+        <img src="media/himeji3.webp" width="480" height="1044" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin three">
+        <img src="media/himeji4.webp" width="480" height="1044" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin four">
+        <img src="media/himeji5.webp" width="480" height="1044" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin five">
+        <img src="media/himeji6.webp" width="480" height="1043" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin six">
+        <img src="media/himeji7.webp" width="480" height="1044" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin seven">
+        <img src="media/himeji8.webp" width="480" height="1044" loading="lazy" decoding="async" alt="Himeji, Japan, 2017 — skin eight">
+      </div>
+    </div>
+
+    <div class="pt">
+      <div class="txt">
+        <h2>What surrounded the moment</h2>
+        <p>Date, time, weather, temperature and elevation, read from the photo and the weather of that day.</p>
+      </div>
+      <div class="fig"><img src="media/lisbon.webp" width="660" height="1435" loading="lazy" decoding="async" alt="A matted photo of a tram in Lisbon, 2023, with its date, time, temperature, conditions, elevation and compass heading beneath"></div>
+    </div>
+
+  </div>
+</main>
+
+<div class="tail">
   <div class="plain">
+    <img src="media/seal.png" alt="" width="52" height="52">
     <p>Private by design. Your photos never leave your phone unless you choose to share them. No uploads, no sign-up. Give Wayfarer your whole camera roll, or only the photos you pick.</p>
   </div>
 
-  <div class="foot"><a href="/pricing.html">Pricing</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/support.html">Support</a></div>
+  <div class="foot">
+    <a href="/pricing.html">Pricing</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/support.html">Support</a>
+    <small>Maps © Mapbox © OpenStreetMap</small>
+  </div>
 </div>
+
+<svg class="route" aria-hidden="true">
+  <defs><mask id="routeMask" maskUnits="userSpaceOnUse"><path class="reveal" id="routeReveal" d=""/></mask></defs>
+  <path class="dash" id="routePath" d="" mask="url(#routeMask)"/>
+</svg>
+
+<script>
+(function(){
+  var v=document.getElementById('film'),b=document.getElementById('play');
+  function start(){
+    b.classList.add('off'); v.controls=true; v.muted=true;
+    var p=v.play();
+    if(p&&p.catch){p.catch(function(){ /* browser refused autoplay-style start: controls are up, the visitor taps again */ });}
+  }
+  b.addEventListener('click',start);
+  v.addEventListener('ended',function(){v.controls=false;b.classList.remove('off');});
+  v.addEventListener('error',function(){b.classList.remove('off');v.controls=false;});
+})();
+
+/* Text fades in and glides up a touch as it enters the screen. */
+(function(){
+  var els=document.querySelectorAll('.pt .txt,.plain');
+  if(!('IntersectionObserver' in window)){document.documentElement.classList.add('no-io');return;}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},
+    {rootMargin:'0px 0px -12% 0px',threshold:0.15});
+  els.forEach(function(el){io.observe(el);});
+})();
+
+/* The route. Stops: the red dot on the hero phone, then the dot before each heading.
+   Between stops: down from the stop, across just inside the top of the next row, down to the next stop.
+   Drawn along its length as the page scrolls, like a journey playing. */
+(function(){
+  var svg=document.querySelector('.route'),dash=document.getElementById('routePath'),rev=document.getElementById('routeReveal');
+  if(!svg||!('getTotalLength' in dash))return;
+  var R=20,samples=[],total=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function abs(el){var r=el.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height};}
+  function stops(){
+    var out=[],ph=document.querySelector('.stage .ph');
+    if(ph){var p=abs(ph);out.push({x:p.x+p.w*0.5034,y:p.y+p.h*0.9037});}
+    if(matchMedia('(max-width:880px)').matches){           /* on a phone the copy sits under the picture: swing to the margin first */
+      var w=document.querySelector('.window'),t=document.querySelector('.right .txt');
+      if(w&&t){var wr=abs(w),tr=abs(t);out.push({x:tr.x+9,y:wr.y+wr.h,ty:wr.y+wr.h-24});}
+    }
+    document.querySelectorAll('.pt h2').forEach(function(h){var r=abs(h),row=abs(h.closest('.pt'));out.push({x:r.x+9,y:r.y+r.h/2,ty:row.y+26});});
+    return out;
+  }
+  function corner(x0,y0,x1,y1,x2,y2){ /* rounded turn at (x1,y1) */
+    var a=Math.atan2(y1-y0,x1-x0),b=Math.atan2(y2-y1,x2-x1);
+    return 'L'+(x1-Math.cos(a)*R)+' '+(y1-Math.sin(a)*R)+'Q'+x1+' '+y1+' '+(x1+Math.cos(b)*R)+' '+(y1+Math.sin(b)*R);
+  }
+  function build(){
+    var S=stops(); if(S.length<2){dash.setAttribute('d','');rev.setAttribute('d','');return;}
+    var d='M'+S[0].x+' '+S[0].y;
+    for(var i=1;i<S.length;i++){
+      var A=S[i-1],B=S[i],ty=B.ty;                    /* the crossing runs just inside the next row's top padding */
+      if(Math.abs(A.x-B.x)<2*R){d+='L'+B.x+' '+B.y;continue;}
+      d+=corner(A.x,A.y,A.x,ty,B.x,ty)+corner(A.x,ty,B.x,ty,B.x,B.y)+'L'+B.x+' '+B.y;
+    }
+    svg.setAttribute('width',document.documentElement.scrollWidth);svg.setAttribute('height',document.documentElement.scrollHeight);
+    svg.style.height=document.documentElement.scrollHeight+'px';
+    dash.setAttribute('d',d);rev.setAttribute('d',d);
+    total=rev.getTotalLength();rev.style.strokeDasharray=total+' '+total;
+    samples=[];for(var L=0;L<=total;L+=4){var pt=rev.getPointAtLength(L);samples.push([L,pt.y]);}
+    draw();
+  }
+  function draw(){
+    if(!total)return;
+    if(still){rev.style.strokeDashoffset=0;return;}
+    var line=scrollY+innerHeight*0.72,L=0;              /* the pen sits 72% down the screen */
+    for(var i=0;i<samples.length;i++){if(samples[i][1]<=line)L=samples[i][0];else break;}
+    rev.style.strokeDashoffset=Math.max(0,total-L);
+  }
+  var tick=false;
+  addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(function(){draw();tick=false;});}},{passive:true});
+  addEventListener('resize',build);addEventListener('load',build);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(build);
+  document.querySelectorAll('img').forEach(function(im){if(!im.complete)im.addEventListener('load',build,{once:true});});
+  build();
+})();
+</script>
 </body>
 </html>

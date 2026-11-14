@@ -8,20 +8,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff" href="media/astrella.woff" crossorigin>
 <style>
+  @font-face{font-family:'Astrella';src:url(media/astrella.woff) format('woff'),url(media/astrella.ttf) format('truetype');font-weight:400;font-style:normal;font-display:swap}
   :root{
-    --paper:#EDE7DD; --ink:#191919; --faint:#8A8172; --line:#CFC7B6; --red:#D6392F;
+    --paper:#FFFFFF; --ink:#191919; --faint:#8A8172; --line:#E2DED6; --red:#D6392F;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--paper);color:var(--ink);font-family:'Outfit',sans-serif;font-weight:300;
-       font-size:17px;line-height:1.65;
-       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cg fill='none' stroke='%23c9c1b2' stroke-opacity='0.35' stroke-width='1.2'%3E%3Cpath d='M60 90c70-50 160-40 210 10s140 60 210 10 90 30 60 90-140 40-190 90-160 60-220 10S-10 140 60 90z'/%3E%3Cpath d='M100 130c55-38 125-30 165 8s110 46 165 8 70 24 47 70-110 32-149 70-125 47-172 8-77-126-56-164z'/%3E%3Cpath d='M480 420c50-30 100 10 80 60s-90 50-130 20-10-50 50-80z'/%3E%3Cpath d='M120 460c40-24 84 8 68 48s-72 40-104 16-12-40 36-64z'/%3E%3C/g%3E%3C/svg%3E");
-       background-size:600px}
+       font-size:17px;line-height:1.65;}
   .wrap{max-width:640px;margin:0 auto;padding:64px 24px 96px}
-  .mark{font-family:'Abril Fatface',serif;font-size:44px;line-height:1;letter-spacing:.5px}
-  .mark a{color:var(--ink);text-decoration:none;border:0}
-  .tag{font-size:16px;color:var(--faint);margin-top:6px}
-  h1{font-family:'Abril Fatface',serif;font-size:30px;font-weight:400;margin:56px 0 8px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand a{display:flex;align-items:center;gap:14px;color:var(--ink);text-decoration:none;border:0}
+  .seal{width:44px;height:44px;flex:0 0 auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
+  .mark{font-family:'Astrella','Abril Fatface',serif;font-size:44px;line-height:1;letter-spacing:0;transform:translateY(-2px)}
+  h1{font-family:'Astrella','Abril Fatface',serif;font-size:34px;font-weight:400;margin:56px 0 8px}
   .date{color:var(--faint);font-size:14px;margin-bottom:28px}
   h2{font-family:'Outfit',sans-serif;font-weight:600;font-size:18px;margin:34px 0 8px}
   p{margin:0 0 16px}
@@ -29,7 +30,7 @@
   li{margin-bottom:8px}
   a{color:var(--red);text-decoration:none;border-bottom:1px solid var(--line)}
   a:hover{border-bottom-color:var(--red)}
-  .plain{background:rgba(255,255,255,.55);border:1px solid var(--line);padding:22px 24px 10px;margin:24px 0 8px}
+  .plain{background:#F7F5F1;border:1px solid var(--line);padding:22px 24px 10px;margin:24px 0 8px}
   .plain ol{margin:0 0 0 22px}
   .plain li{margin-bottom:12px;padding-left:6px}
   .plain li::marker{color:var(--faint);font-weight:400}
@@ -42,8 +43,7 @@
 </head>
 <body>
 <div class="wrap">
-  <div class="mark"><a href="/">Wayfarer</a></div>
-  <div class="tag">for the explorer.</div>
+  <div class="brand"><a href="/"><img class="seal" src="media/seal.png" alt="" width="44" height="44"><span class="mark">Wayfarer</span></a></div>
 
   <h1>Terms of Use</h1>
   <div class="date">Version 1 · 14 November 2026</div>
