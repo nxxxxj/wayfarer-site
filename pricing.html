@@ -77,7 +77,7 @@
   .foot a{color:var(--faint)}
 
   /* ---------- menu ---------- */
-  .menu{position:fixed;top:18px;right:18px;z-index:50}
+  .menu{position:fixed;top:18px;right:24px;z-index:50}
   .menu button{width:44px;height:44px;border:0;border-radius:50%;background:rgba(255,255,255,.85);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.08)}
   .menu button span{position:relative;display:block;width:20px;height:2px;background:var(--ink);transition:background .15s}
   .menu button span::before,.menu button span::after{content:"";position:absolute;left:0;width:20px;height:2px;background:var(--ink);transition:transform .2s}
@@ -85,7 +85,7 @@
   .menu.open button span{background:transparent}
   .menu.open button span::before{transform:translateY(6px) rotate(45deg)}
   .menu.open button span::after{transform:translateY(-6px) rotate(-45deg)}
-  .menu nav{display:none;position:absolute;top:54px;right:0;min-width:220px;background:#fff;border:1px solid var(--line);box-shadow:0 18px 40px -18px rgba(0,0,0,.3);padding:8px 0}
+  .menu nav{display:none;position:absolute;top:54px;right:0;min-width:220px;background:#fff;box-shadow:0 18px 40px -18px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.06);padding:8px 0}
   .menu.open nav{display:block}
   .menu nav a{display:flex;align-items:center;gap:12px;padding:11px 22px;font-size:18px;font-weight:400;color:var(--ink);border:0;white-space:nowrap}
   .menu nav a::before{content:"";width:9px;height:9px;border-radius:50%;background:transparent;flex:0 0 auto}
@@ -236,6 +236,9 @@ var WF={"tz":{"Asia/Dubai":"AE","Asia/Kabul":"AF","America/Antigua":"AG","Americ
   var m=document.getElementById('menu'),b=m.querySelector('button'),here=location.pathname.replace(/\/index\.html$/,'/');
   m.querySelectorAll('a').forEach(function(a){if(a.getAttribute('href')===here)a.classList.add('here');});
   function set(o){m.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false');}
+  /* the button sits on the seal's centre line */
+  function place(){var sl=document.querySelector('.seal');if(!sl)return;var r=sl.getBoundingClientRect();m.style.top=Math.round(r.top+scrollY+r.height/2-22)+'px';}
+  place();addEventListener('resize',place);addEventListener('load',place);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(place);
   b.addEventListener('click',function(e){e.stopPropagation();set(!m.classList.contains('open'));});
   document.addEventListener('click',function(e){if(!m.contains(e.target))set(false);});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')set(false);});
