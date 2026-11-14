@@ -47,12 +47,13 @@
   .stage .ph{position:absolute;left:40.95%;top:10.98%;width:22.03%;height:auto;z-index:3;filter:drop-shadow(0 30px 40px rgba(0,0,0,.28))}
   /* the phone spans 11%–85.5% of the stage; both sides centre on it */
   .pitch{position:absolute;left:0;right:0;top:10.98%;height:74.5%;pointer-events:none;z-index:4;display:flex}
-  .pitch .side{display:flex;align-items:center}
+  .pitch .side{display:flex;align-items:flex-start;padding-top:calc(22.82vw - 32px)}  /* the brand's old centre line; the headline now starts level with the wordmark */
   .pitch .left{width:40.95%;justify-content:flex-end;padding-right:4.5%}
-  .pitch .right{width:37%;margin-left:auto;justify-content:flex-start;padding:0 24px 0 4.5%}
+  .pitch .right{width:37%;margin-left:auto;justify-content:flex-start;padding-left:4.5%;padding-right:24px}
   .pitch .brand,.pitch .txt{pointer-events:auto}
   .brand{display:flex;align-items:center;gap:18px}
   .brand .mark{transform:translateY(-2px)}
+  .pitch .lede{margin-top:4px}
   .seal{width:64px;height:64px;flex:0 0 auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.18))}
   .mark{font-family:'Astrella','Abril Fatface',serif;font-size:64px;line-height:1;letter-spacing:0;white-space:nowrap}
   .txt{max-width:380px}
@@ -73,7 +74,7 @@
   .play svg{margin-left:4px}
   .play.off{display:none}
 
-  @media (max-width:1180px){.mark{font-size:52px}.seal{width:54px;height:54px}.lede{font-size:32px}.pitch .right{width:40%}}
+  @media (max-width:1180px){.mark{font-size:52px}.seal{width:54px;height:54px}.lede{font-size:32px}.pitch .right{width:40%}.pitch .side{padding-top:calc(22.82vw - 27px)}}
 
   /* ---------- points ---------- */
   .wrap{max-width:1040px;margin:0 auto;padding:0 24px}
@@ -113,12 +114,15 @@
   /* ---------- text arrives as you reach it ---------- */
   .pt .txt,.plain{opacity:0;transform:translateY(14px);transition:opacity .9s ease-out,transform .9s cubic-bezier(.2,.6,.2,1)}
   .pt .txt.in,.plain.in,.no-io .pt .txt,.no-io .plain{opacity:1;transform:none}
+  html.measuring .pt .txt{transform:none!important;transition:none!important}
   @media (prefers-reduced-motion:reduce){.pt .txt,.plain{opacity:1;transform:none;transition:none}}
 
   /* ---------- plain + foot ---------- */
   .tail{max-width:1040px;margin:0 auto;padding:0 24px 96px}
-  .store{margin:72px 0 0}
-  .store a{border:0;display:inline-block}
+  .pt.last{align-items:stretch}
+  .pt.last .txt{display:flex;flex-direction:column;justify-content:center;position:relative}
+  .pt.last .fig{align-items:center}
+  .pt p.store{position:absolute;left:0;bottom:0;margin:0;padding-left:30px}  /* flush with the body copy */
   .store img{height:54px;width:auto;display:block}  /* becomes a link when the store page exists */
   .plain{padding:0;margin:72px 0 0;display:flex;gap:24px;align-items:flex-start}
   .plain img{width:52px;height:52px;flex:0 0 auto;margin-top:2px}
@@ -151,6 +155,8 @@
     .fig img{width:min(260px,100%)}
     .strip{padding-left:24px;scroll-padding-left:24px}
     .strip img{width:176px}
+    .pt.last{align-items:start}
+    .pt p.store{position:static;margin:28px 0 0}
   }
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.play span{transition:none}}
 </style>
@@ -255,10 +261,11 @@
       </div>
     </div>
 
-    <div class="pt">
+    <div class="pt last">
       <div class="txt">
         <h2>What surrounded the moment</h2>
         <p>Date, time, weather, temperature and elevation, read from the photo and the weather of that day.</p>
+        <p class="store"><img src="media/appstore-badge.png" alt="Download on the App Store" height="54"></p>
       </div>
       <div class="fig"><img src="media/lisbon.webp" width="660" height="1435" loading="lazy" decoding="async" alt="A matted photo of a tram in Lisbon, 2023, with its date, time, temperature, conditions, elevation and compass heading beneath"></div>
     </div>
@@ -267,7 +274,6 @@
 </main>
 
 <div class="tail">
-  <p class="store" id="store"><img src="media/appstore-badge.png" alt="Download on the App Store" height="54"></p>
   <div class="plain">
     <img src="media/seal.png" alt="" width="52" height="52">
     <p>Private by design. Your photos never leave your phone unless you choose to share them. No uploads, no sign-up. Give Wayfarer your whole camera roll, or only the photos you pick.</p>
@@ -316,6 +322,7 @@
   var R=20,pts=[],total=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches,lastN=-1;
   function abs(el){var r=el.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height};}
   function stops(){
+    document.documentElement.classList.add('measuring');   /* measure headings where they will land, not mid-fade */
     var out=[],ph=document.querySelector('.stage .ph');
     if(ph){var p=abs(ph);out.push({x:p.x+p.w*0.5034,y:p.y+p.h*0.9037});}
     if(matchMedia('(max-width:880px)').matches){           /* on a phone the copy sits under the picture: swing to the margin first */
@@ -323,6 +330,7 @@
       if(w&&t){var wr=abs(w),tr=abs(t);out.push({x:tr.x+9,y:wr.y+wr.h,ty:wr.y+wr.h-24});}
     }
     document.querySelectorAll('.pt h2').forEach(function(h){var r=abs(h),row=abs(h.closest('.pt'));out.push({x:r.x+9,y:r.y+r.h/2,ty:row.y+26});});
+    document.documentElement.classList.remove('measuring');
     return out;
   }
   function corner(x0,y0,x1,y1,x2,y2){ /* rounded turn at (x1,y1) */
