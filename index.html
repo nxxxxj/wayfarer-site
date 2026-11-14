@@ -3,8 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Wayfarer — Travel Journal</title>
+<title>Wayfarer - Travel Journal for Explorers</title>
 <meta name="description" content="Wayfarer turns your camera roll into a living map of everywhere you've been. Every photo matted and captioned, stitched into journeys. Your photos never leave your phone.">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/media/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/media/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wayfarer">
+<meta property="og:title" content="Wayfarer - Travel Journal for Explorers">
+<meta property="og:description" content="Your camera roll, mapped. Every photo pinned where you took it, matted and captioned like a print, stitched into journeys. Your photos never leave your phone.">
+<meta property="og:url" content="https://wayfarer.pics/">
+<meta property="og:image" content="https://wayfarer.pics/media/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
@@ -96,7 +108,7 @@
   .hero{z-index:auto}                 /* no stacking context: the route can sit between the map and the phone */
   .route{position:absolute;left:0;top:0;width:100%;pointer-events:none;z-index:2;overflow:visible}
   .route .dash{fill:none;stroke:var(--red);stroke-width:3;stroke-dasharray:11 9;stroke-linecap:round;stroke-linejoin:round}
-  .route .reveal{fill:none;stroke:#fff;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+  .route .measure{fill:none;stroke:none}
 
   /* ---------- text arrives as you reach it ---------- */
   .pt .txt,.plain{opacity:0;transform:translateY(14px);transition:opacity .9s ease-out,transform .9s cubic-bezier(.2,.6,.2,1)}
@@ -105,6 +117,9 @@
 
   /* ---------- plain + foot ---------- */
   .tail{max-width:1040px;margin:0 auto;padding:0 24px 96px}
+  .store{margin:72px 0 0}
+  .store a{border:0;display:inline-block}
+  .store img{height:54px;width:auto;display:block}  /* becomes a link when the store page exists */
   .plain{padding:0;margin:72px 0 0;display:flex;gap:24px;align-items:flex-start}
   .plain img{width:52px;height:52px;flex:0 0 auto;margin-top:2px}
   .plain p{margin:0;max-width:760px}
@@ -252,6 +267,7 @@
 </main>
 
 <div class="tail">
+  <p class="store" id="store"><img src="media/appstore-badge.png" alt="Download on the App Store" height="54"></p>
   <div class="plain">
     <img src="media/seal.png" alt="" width="52" height="52">
     <p>Private by design. Your photos never leave your phone unless you choose to share them. No uploads, no sign-up. Give Wayfarer your whole camera roll, or only the photos you pick.</p>
@@ -264,8 +280,8 @@
 </div>
 
 <svg class="route" aria-hidden="true">
-  <defs><mask id="routeMask" maskUnits="userSpaceOnUse"><path class="reveal" id="routeReveal" d=""/></mask></defs>
-  <path class="dash" id="routePath" d="" mask="url(#routeMask)"/>
+  <path class="measure" id="routeFull" d=""/>
+  <path class="dash" id="routePath" d=""/>
 </svg>
 
 <script>
@@ -292,11 +308,12 @@
 
 /* The route. Stops: the red dot on the hero phone, then the dot before each heading.
    Between stops: down from the stop, across just inside the top of the next row, down to the next stop.
-   Drawn along its length as the page scrolls, like a journey playing. */
+   Drawn along its length as the page scrolls, like a journey playing. The visible path is rebuilt
+   from the measured route up to the pen, rather than masked, so every browser repaints it. */
 (function(){
-  var svg=document.querySelector('.route'),dash=document.getElementById('routePath'),rev=document.getElementById('routeReveal');
-  if(!svg||!('getTotalLength' in dash))return;
-  var R=20,samples=[],total=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var svg=document.querySelector('.route'),dash=document.getElementById('routePath'),full=document.getElementById('routeFull');
+  if(!svg||!('getTotalLength' in full))return;
+  var R=20,pts=[],total=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches,lastN=-1;
   function abs(el){var r=el.getBoundingClientRect();return {x:r.left+scrollX,y:r.top+scrollY,w:r.width,h:r.height};}
   function stops(){
     var out=[],ph=document.querySelector('.stage .ph');
@@ -313,26 +330,33 @@
     return 'L'+(x1-Math.cos(a)*R)+' '+(y1-Math.sin(a)*R)+'Q'+x1+' '+y1+' '+(x1+Math.cos(b)*R)+' '+(y1+Math.sin(b)*R);
   }
   function build(){
-    var S=stops(); if(S.length<2){dash.setAttribute('d','');rev.setAttribute('d','');return;}
+    var S=stops(); if(S.length<2){dash.setAttribute('d','');full.setAttribute('d','');return;}
     var d='M'+S[0].x+' '+S[0].y;
     for(var i=1;i<S.length;i++){
-      var A=S[i-1],B=S[i],ty=B.ty;                    /* the crossing runs just inside the next row's top padding */
+      var A=S[i-1],B=S[i],ty=B.ty;
       if(Math.abs(A.x-B.x)<2*R){d+='L'+B.x+' '+B.y;continue;}
       d+=corner(A.x,A.y,A.x,ty,B.x,ty)+corner(A.x,ty,B.x,ty,B.x,B.y)+'L'+B.x+' '+B.y;
     }
-    svg.setAttribute('width',document.documentElement.scrollWidth);svg.setAttribute('height',document.documentElement.scrollHeight);
-    svg.style.height=document.documentElement.scrollHeight+'px';
-    dash.setAttribute('d',d);rev.setAttribute('d',d);
-    total=rev.getTotalLength();rev.style.strokeDasharray=total+' '+total;
-    samples=[];for(var L=0;L<=total;L+=4){var pt=rev.getPointAtLength(L);samples.push([L,pt.y]);}
-    draw();
+    var H=document.documentElement.scrollHeight,W=document.documentElement.scrollWidth;
+    svg.setAttribute('width',W);svg.setAttribute('height',H);svg.style.height=H+'px';
+    full.setAttribute('d',d);
+    total=full.getTotalLength();pts=[];
+    for(var L=0;L<=total;L+=3){var q=full.getPointAtLength(L);pts.push([q.x.toFixed(1),q.y.toFixed(1)]);}
+    var e=full.getPointAtLength(total);pts.push([e.x.toFixed(1),e.y.toFixed(1)]);
+    lastN=-1;draw();
   }
   function draw(){
-    if(!total)return;
-    if(still){rev.style.strokeDashoffset=0;return;}
-    var line=scrollY+innerHeight*0.72,L=0;              /* the pen sits 72% down the screen */
-    for(var i=0;i<samples.length;i++){if(samples[i][1]<=line)L=samples[i][0];else break;}
-    rev.style.strokeDashoffset=Math.max(0,total-L);
+    if(!pts.length)return;
+    var n=pts.length;
+    if(!still){
+      var line=scrollY+innerHeight*0.72;n=0;              /* the pen sits 72% down the screen */
+      while(n<pts.length&&pts[n][1]<=line)n++;
+    }
+    if(n===lastN)return;lastN=n;
+    if(n<2){dash.setAttribute('d','');return;}
+    var out=['M'+pts[0][0]+' '+pts[0][1]];
+    for(var i=1;i<n;i++)out.push('L'+pts[i][0]+' '+pts[i][1]);
+    dash.setAttribute('d',out.join(''));
   }
   var tick=false;
   addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(function(){draw();tick=false;});}},{passive:true});
